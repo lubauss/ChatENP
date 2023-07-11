@@ -10,7 +10,6 @@ from time import sleep
 import os
 from streamlit_chat import message
 
-from langchain import OpenAI
 from langchain.agents import initialize_agent, Tool
 from langchain.agents import AgentType
 from langchain.chat_models import ChatOpenAI
