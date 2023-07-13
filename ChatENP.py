@@ -172,16 +172,16 @@ def main():
     st.header("💻 ChatENP 🍺 \n 📚 **Asistente de Búsqueda Aumentada** 📖")
 
     with st.sidebar:
-        st.subheader("Sube tus documentos")
+        st.subheader("Sube ⬆️ tus documentos 📄")
         pdf_docs = st.file_uploader(
-            "Arrastra aquí PDFs y haz clic en 'Procesar'", accept_multiple_files=True)
-        upload_namespace = st.text_input("Escribe un nombre para tu base de datos:")
+            "Arrastra aquí PDFs 📄 y haz clic 👆 en 'Procesar':", accept_multiple_files=True)
+        upload_namespace = st.text_input("Escribe 📝 un nombre para tu base de datos 🗄️:")
 
-        if st.button("Procesar"):
+        if st.button("Procesar ⚙️"):
             if not upload_namespace:
-                st.warning("No olvides el nombre de tu base de datos")
+                st.warning("No olvides 🎗️ el nombre de tu base de datos 🗄️")
             else:
-                with st.spinner("Procesando"):
+                with st.spinner("Procesando... ⏳"):
                     # get pdf text
                     docs_pages = get_pdf_pages(pdf_docs)
                     st.write(docs_pages)
@@ -189,7 +189,7 @@ def main():
                     # create vector store
                     pinecone_index(pdf_docs, upload_namespace, docs_pages, index)
         # Always show the header
-        st.subheader("Haz clic en la base de datos que quieras consultar")
+        st.subheader("Haz clic 👆 en la base de datos 🗄️ que quieras consultar 🔍")
 
         index_name = 'langchain-retrieval-agent'
 
@@ -209,9 +209,9 @@ def main():
 
         # Check if the namespace has been selected
         if 'namespace' in st.session_state and st.session_state['namespace']:
-            st.success(f"Base de datos seleccionada: {st.session_state['namespace']}")
+            st.success(f"Base de datos 🗄️ seleccionada ✅: {st.session_state['namespace']}")
         else:
-            st.warning("No olvides seleccionar la base de datos que quieres consultar.")
+            st.warning("No olvides 🎗️ seleccionar 👆 la base de datos 🗄️ que quieres consultar.")
             st.stop()  # Stop execution of the script
 
     if 'responses' not in st.session_state:
@@ -242,11 +242,11 @@ def main():
         else:
             agent = st.session_state['agent'] # If the agent already exists in the session state, get it.
 
-        query = st.text_area("Consulta: ", key="input")
-        send_button = st.button("Enviar")
+        query = st.text_area("Consulta 🔍: ", key="input")
+        send_button = st.button("Enviar 📤")
 
         if send_button and query:
-            with st.spinner("Buscando..."):
+            with st.spinner("Buscando... 🔎"):
                 handle_chat(agent, query)
 
             # Add a small delay
