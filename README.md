@@ -37,7 +37,7 @@ ChatENP is a conversational AI application powered by Streamlit, OpenAI, and Pin
     PINECONE_API_KEY = "your-pinecone-api-key"
     PINECONE_API_ENV = "your-pinecone-api-env"
     ```
-    Please replace `"your-openai-api-key"`, `"your-serpapi-api-key"`, `"your-pinecone-api-key"`, and `"your-pinecone-api-env"` with your actual API keys.
+    Please replace `"your-openai-api-key"`, `"your-serpapi-api-key"`, `"your-pinecone-api-key"`, and `"your-pinecone-api-env"` with your actual keys.
 
 5. **Run the Streamlit app:**
     ```
@@ -47,7 +47,7 @@ ChatENP is a conversational AI application powered by Streamlit, OpenAI, and Pin
 
 ### Using the App
 
-- **Upload your documents:** In the sidebar, you can upload your PDF documents that will be used as the knowledge base for answering queries. Enter a Pinecone namespace and click on "Process". The app will then extract the text from the uploaded PDFs, create embeddings for the text, and store these embeddings in a Pinecone index.
+- **Upload your documents:** In the sidebar, you can upload your PDF documents that will be used as the knowledge base for answering queries. Enter a Pinecone namespace and click on "Process ⚙️". The app will then extract the text from the uploaded PDFs, create embeddings for the text, and store these embeddings in a Pinecone index.
   
 - **Choose a namespace to query:** In the sidebar, you can select the namespace from which you want to retrieve information. The namespaces correspond to the different document sets you've uploaded.
   
