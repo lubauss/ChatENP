@@ -47,7 +47,7 @@ ChatENP es una aplicación de IA conversacional impulsada por Streamlit 💻, Op
 
 ### Usando la Aplicación 📲
 
-- **Sube tus documentos 📤:** En la barra lateral, puedes subir tus documentos PDF que se utilizarán como base de conocimientos para responder a las consultas. Introduce un espacio de nombres de Pinecone y haz clic en "Procesar⚙️". La aplicación extraerá entonces el texto de los PDFs subidos, creará incrustaciones para el texto, y almacenará estas incrustaciones en un índice de Pinecone.
+- **Sube tus documentos 📤🗄️:** En la barra lateral, puedes subir tus documentos PDF que se utilizarán como base de conocimientos para responder a las consultas. Introduce un espacio de nombres de Pinecone y haz clic en "Procesar⚙️". La aplicación extraerá entonces el texto de los PDFs subidos, creará incrustaciones para el texto, y almacenará estas incrustaciones en un índice de Pinecone.
   
 - **Elige un espacio de nombres para consultar 🔍:** En la barra lateral, puedes seleccionar el espacio de nombres del cual quieres recuperar información. Los espacios de nombres corresponden a los diferentes conjuntos de documentos que has subido.
   
