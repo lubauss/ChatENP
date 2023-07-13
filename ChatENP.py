@@ -191,16 +191,16 @@ def main():
     )
 
     with st.sidebar:
-        st.subheader("Upload your documents")
+        st.subheader("Sube tus documentos")
         pdf_docs = st.file_uploader(
-            "Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
-        upload_namespace = st.text_input("Enter Pinecone Namespace:")
+            "Arrastra aquí PDFs y dale click a 'Procesar'", accept_multiple_files=True)
+        upload_namespace = st.text_input("Escribe un nombre para tu base de datos:")
 
-        if st.button("Process"):
+        if st.button("Procesar"):
             if not upload_namespace:
-                st.warning("Please enter a Pinecone namespace.")
+                st.warning("No olvides el nombre de tu base de datos")
             else:
-                with st.spinner("Processing"):
+                with st.spinner("Procesando"):
                     # get pdf text
                     docs_pages = get_pdf_pages(pdf_docs)
                     st.write(docs_pages)
@@ -208,7 +208,7 @@ def main():
                     # create vector store
                     vector_namespace = pinecone_index(pdf_docs, upload_namespace, docs_pages, index)
         # Always show the header
-        st.subheader("Choose namespace to query")
+        st.subheader("Selecciona una base de datos que quieras consultar")
 
         index_name = 'langchain-retrieval-agent'
 
@@ -228,9 +228,9 @@ def main():
 
         # Check if the namespace has been selected
         if 'namespace' in st.session_state and st.session_state['namespace']:
-            st.success(f"Selected namespace: {st.session_state['namespace']}")
+            st.success(f"Base de datos seleccionada: {st.session_state['namespace']}")
         else:
-            st.warning("Please select a namespace.")
+            st.warning("No olvides seleccionar la base de datos que quieres consultar.")
             st.stop()  # Stop execution of the script
 
     if 'responses' not in st.session_state:
@@ -261,11 +261,11 @@ def main():
         else:
             agent = st.session_state['agent'] # If the agent already exists in the session state, get it.
 
-        query = st.text_area("Query: ", key="input")
-        send_button = st.button("Send")
+        query = st.text_area("Consulta: ", key="input")
+        send_button = st.button("Enviar")
 
         if send_button and query:
-            with st.spinner("typing..."):
+            with st.spinner("Buscando..."):
                 handle_chat(agent, query)
 
             # Add a small delay
