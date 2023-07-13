@@ -181,7 +181,7 @@ def handle_chat(agent, query):
 def main():
     global index
     st.header("💻 ChatENP 🍺 \n 📚 **Asistente de Búsqueda Aumentada** 📖")
-
+```
     st.write(
         "Environment variables:",
         os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"],
@@ -189,7 +189,7 @@ def main():
         os.environ["PINECONE_API_KEY"] == st.secrets["PINECONE_API_KEY"],
         os.environ["PINECONE_API_ENV"] == st.secrets["PINECONE_API_ENV"],
     )
-
+´´´
     with st.sidebar:
         st.subheader("Sube tus documentos")
         pdf_docs = st.file_uploader(
