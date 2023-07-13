@@ -1,6 +1,6 @@
 # ChatENP: An Augmented Search Assistant 🤖
 
-ChatENP is a conversational AI application powered by Streamlit 💻, OpenAI 🧠, and Pinecone 🌲. It uses GPT-3.5-turbo for generating responses 💬 and a retrieval-based QA model to search a given knowledge base 📚. The knowledge base is a set of documents uploaded by the user 👤, and the AI uses these documents to answer queries 💭❓.
+ChatENP is a conversational AI application powered by Streamlit 💻, OpenAI 🧠, and Pinecone 🌲. It uses GPT-3.5-turbo for generating responses 💬 and a retrieval-based QA model to search a given knowledge base 📚. The knowledge base is a set of documents uploaded by the user 👤 and the AI uses these documents to answer queries 💭❓.
 
 ## Getting Started 🚀
 
