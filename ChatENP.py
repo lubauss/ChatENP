@@ -43,7 +43,7 @@ def get_pdf_pages(pdf_docs):
                 count_page+=1
     return data
 
-def pinecone_index(pdf_docs, pinecone_namespace, data, index_name, index):
+def pinecone_index(pdf_docs, pinecone_namespace, data, index):
     import openai
 
     embed = OpenAIEmbeddings(model='text-embedding-ada-002')
@@ -84,18 +84,7 @@ def pinecone_index(pdf_docs, pinecone_namespace, data, index_name, index):
                 except Exception as e:
                     print(f"Error during embedding creation: {e}")
                     sleep(5.0)
-            '''
-                except Exception as e:
-                print(e)
-                done = False
-                while not done:
-                    sleep(5)
-                    try:
-                        res = openai.Embedding.create(input=texts, engine=embed_model)
-                        done = True
-                    except Exception as e:
-                        print(e)
-            '''
+      
             embeds = [record['embedding'] for record in res['data']] 
 
             # Crear una lista de tuplas con los IDs, los embeddings y los metadatos
@@ -182,14 +171,6 @@ def main():
     global index
     st.header("💻 ChatENP 🍺 \n 📚 **Asistente de Búsqueda Aumentada** 📖")
 
-    st.write(
-        "Environment variables:",
-        os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"],
-        os.environ["SERPAPI_API_KEY"] == st.secrets["SERPAPI_API_KEY"],
-        os.environ["PINECONE_API_KEY"] == st.secrets["PINECONE_API_KEY"],
-        os.environ["PINECONE_API_ENV"] == st.secrets["PINECONE_API_ENV"],
-    )
-
     with st.sidebar:
         st.subheader("Sube tus documentos")
         pdf_docs = st.file_uploader(
@@ -206,7 +187,7 @@ def main():
                     st.write(docs_pages)
 
                     # create vector store
-                    vector_namespace = pinecone_index(pdf_docs, upload_namespace, docs_pages, index)
+                    pinecone_index(pdf_docs, upload_namespace, docs_pages, index)
         # Always show the header
         st.subheader("Haz clic en la base de datos que quieras consultar")
 
