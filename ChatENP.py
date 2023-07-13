@@ -169,7 +169,7 @@ def handle_chat(agent, query):
 
 def main():
     global index
-    st.header("💻 ChatENP 🍺 \n 📚 **Asistente de Búsqueda Aumentada** 📖")
+    st.header("💻 ChatENP 🍺 \n ✨📚 **Asistente de Búsqueda Aumentada** 📖✨")
 
     with st.sidebar:
         st.subheader("Sube ⬆️ tus documentos 📄")
