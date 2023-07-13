@@ -39,7 +39,7 @@ def get_pdf_pages(pdf_docs):
             if not text=="":
             # text += page.extract_text() + "\n"
                 tokens=get_tokens(text)
-                data.append({"document":docname,"page":count_page,"text":text,"tokens":tokens})
+                data.append({"source":f"{docname}, page:{count_page}","text":text,"tokens":tokens})
                 count_page+=1
     return data
 
