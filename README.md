@@ -47,7 +47,7 @@ ChatENP is a conversational AI application powered by Streamlit 💻, OpenAI �
 
 ### Using the App 📲
 
-- **Upload your documents 📤:** In the sidebar, you can upload your PDF documents that will be used as the knowledge base for answering queries. Enter a Pinecone namespace and click on "Process⚙️". The app will then extract the text from the uploaded PDFs, create embeddings for the text, and store these embeddings in a Pinecone index.
+- **Upload your documents 🗄️:** In the sidebar, you can upload your PDF documents that will be used as the knowledge base for answering queries. Enter a Pinecone namespace and click on "Process⚙️". The app will then extract the text from the uploaded PDFs, create embeddings for the text, and store these embeddings in a Pinecone index.
   
 - **Choose a namespace to query 🔍:** In the sidebar, you can select the namespace from which you want to retrieve information. The namespaces correspond to the different document sets you've uploaded.
   
