@@ -119,7 +119,7 @@ def get_vectorstore(query_namespace, index):
     return vectorstore
 
 def get_conversation_chain(vectorstore):
-    llm_1 = ChatOpenAI(temperature=0.2, model_name="gpt-3.5-turbo-16k")
+    llm_1 = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
 
     # Retrieval qa chain
     qa = RetrievalQAWithSourcesChain.from_chain_type(
@@ -135,7 +135,7 @@ def run_qa(qa, query):
     return f"{result['answer']}\n Sources:\n {result['sources']}"
 
 def get_agent(run_qa_func):
-    llm_2 = ChatOpenAI(temperature=0.2, model_name="gpt-3.5-turbo-16k")
+    llm_2 = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
     
     # Calculator
     #llm_math_chain = LLMMathChain.from_llm(llm=llm, verbose=True)
