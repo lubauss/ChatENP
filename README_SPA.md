@@ -1,4 +1,4 @@
-# ChatENP: Un Asistente de Búsqueda Mejorado 🤖
+# ChatENP: Asistente de Búsqueda Aumentada 🤖✨
 
 ChatENP es una aplicación de IA conversacional impulsada por Streamlit 💻, OpenAI 🧠, y Pinecone 🌲. Utiliza GPT-3.5-turbo-16k para generar respuestas 💬 y un modelo de QA basado en recuperación para buscar en una base de conocimientos 📚. La base de conocimientos es un conjunto de documentos subidos por el usuario 👤 y la IA utiliza estos documentos para responder consultas 💭❓.
 
