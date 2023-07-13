@@ -193,7 +193,7 @@ def main():
     with st.sidebar:
         st.subheader("Sube tus documentos")
         pdf_docs = st.file_uploader(
-            "Arrastra aquí PDFs y dale click a 'Procesar'", accept_multiple_files=True)
+            "Arrastra aquí PDFs y haz clic en 'Procesar'", accept_multiple_files=True)
         upload_namespace = st.text_input("Escribe un nombre para tu base de datos:")
 
         if st.button("Procesar"):
@@ -208,7 +208,7 @@ def main():
                     # create vector store
                     vector_namespace = pinecone_index(pdf_docs, upload_namespace, docs_pages, index)
         # Always show the header
-        st.subheader("Selecciona una base de datos que quieras consultar")
+        st.subheader("Haz clic en la base de datos que quieras consultar")
 
         index_name = 'langchain-retrieval-agent'
 
