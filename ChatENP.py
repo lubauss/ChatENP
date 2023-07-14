@@ -16,6 +16,12 @@ from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 
+import os
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_ENDPOINT"] = "https://api.smith.langchain.com"
+os.environ["LANGCHAIN_API_KEY"] = "ls__586518e17ecd47e4a44b8767a151d26a"
+os.environ["LANGCHAIN_SESSION"] = "chat-enp-streamlit"
+
 # Global variables
 pinecone.init(api_key=os.environ['PINECONE_API_KEY'], 
             environment=os.environ['PINECONE_API_ENV'])
