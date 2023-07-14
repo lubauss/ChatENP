@@ -46,8 +46,6 @@ def get_pdf_pages(pdf_docs):
 def pinecone_index(pdf_docs, pinecone_namespace, data, index):
     import openai
 
-    embed = OpenAIEmbeddings(model='text-embedding-ada-002')
-
     if index_name not in pinecone.list_indexes():
         # we create a new index
         pinecone.create_index(
@@ -168,18 +166,20 @@ def handle_chat(agent, query):
     
 
 def main():
-    global index
+    global index, index_name
     st.header("💻 ChatENP 🍺 \n ✨📚 **Asistente de Búsqueda Aumentada** 📖✨")
 
+    query_namespace = None  # Initialize query_namespace to None
+
     with st.sidebar:
-        st.subheader("Sube ⬆️ tus documentos 📄")
+        st.subheader("⬆️ Sube tus documentos 📄")
         pdf_docs = st.file_uploader(
-            "Arrastra aquí PDFs 📄 y haz clic 👆 en 'Procesar':", accept_multiple_files=True)
-        upload_namespace = st.text_input("Escribe 📝 un nombre para tu base de datos 🗄️:")
+            "📄 Arrastra aquí PDFs y haz clic 👆 en 'Procesar':", accept_multiple_files=True)
+        upload_namespace = st.text_input("📝 Escribe un nombre para tu base de datos 🗄️:")
 
         if st.button("Procesar ⚙️"):
             if not upload_namespace:
-                st.warning("No olvides 🎗️ el nombre de tu base de datos 🗄️")
+                st.warning("🎗️ No olvides  el nombre de tu base de datos 🗄️")
             else:
                 with st.spinner("Procesando... ⏳"):
                     # get pdf text
@@ -191,8 +191,6 @@ def main():
         # Always show the header
         st.subheader("Haz clic 👆 en la base de datos 🗄️ que quieras consultar 🔍")
 
-        index_name = 'langchain-retrieval-agent'
-
         pinecone.init(api_key=os.environ['PINECONE_API_KEY'], 
                 environment=os.environ['PINECONE_API_ENV'])
 
@@ -201,11 +199,28 @@ def main():
         stats = index.describe_index_stats()
         namespaces = stats.get('namespaces', {}).keys()
 
+        # Initialize st.session_state['namespace'] if it doesn't exist
+        if 'namespace' not in st.session_state:
+            st.session_state['namespace'] = None
+
         # Create a button for each namespace
         for namespace in namespaces:
             if st.button(namespace):
                 # Store the current selection in session state
                 st.session_state['namespace'] = namespace
+                # Update query_namespace
+                query_namespace = st.session_state['namespace']
+        # Initialize the agent only if it doesn't exist in the session state or the namespace has changed
+        if 'agent' not in st.session_state or st.session_state['namespace'] != query_namespace:
+            # Initialize your agent here
+            query_namespace = st.session_state['namespace']
+            vectorstore = get_vectorstore(query_namespace, index)        
+            qa = get_conversation_chain(vectorstore)
+            agent = get_agent(lambda query: run_qa(qa, query)) # Pass run_qa as a lambda function
+            st.session_state['agent'] = agent # Set the agent here
+        else:
+            agent = st.session_state['agent'] # If the agent already exists in the session state, get it.
+
 
         # Check if the namespace has been selected
         if 'namespace' in st.session_state and st.session_state['namespace']:
@@ -231,17 +246,7 @@ def main():
                     message(st.session_state['responses'][i], key=str(i))
         
     with textcontainer:
-    # Initialize the agent only if it doesn't exist in the session state
-        if 'agent' not in st.session_state:
-            # Initialize your agent here
-            query_namespace = st.session_state['namespace']
-            vectorstore = get_vectorstore(query_namespace, index)        
-            qa = get_conversation_chain(vectorstore)
-            agent = get_agent(lambda query: run_qa(qa, query)) # Pass run_qa as a lambda function
-            st.session_state['agent'] = agent # Set the agent here
-        else:
-            agent = st.session_state['agent'] # If the agent already exists in the session state, get it.
-
+    
         query = st.text_area("Consulta 🔍: ", key="input")
         send_button = st.button("Enviar 📤")
 
