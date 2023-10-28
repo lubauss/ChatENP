@@ -138,12 +138,7 @@ def pinecone_index(pinecone_namespace, data, index_name):
 def get_vectorstore(query_namespace, index):
     embed = OpenAIEmbeddings(model='text-embedding-ada-002')
     text_field = "text"
-    vectorstore = Pinecone(
-                namespace=query_namespace,
-                index=index, 
-                embedding=embed,
-                text_key=text_field,
-)
+    vectorstore = Pinecone(index, embed.embed_query, text_field, namespace=query_namespace)
     
     return vectorstore
 
