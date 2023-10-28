@@ -26,7 +26,7 @@ os.environ["LANGCHAIN_SESSION"] = "chat-enp-streamlit"
 pinecone.init(api_key=os.environ['PINECONE_API_KEY'], 
             environment=os.environ['PINECONE_API_ENV'])
 
-index_name = 'langchain-retrieval-agent'
+index_name = 'langchain-retrieval-agent-index'
 index = pinecone.Index(index_name)
 embed = OpenAIEmbeddings(model='text-embedding-ada-002')
 
@@ -138,7 +138,12 @@ def pinecone_index(pinecone_namespace, data, index_name):
 def get_vectorstore(query_namespace, index):
     embed = OpenAIEmbeddings(model='text-embedding-ada-002')
     text_field = "text"
-    vectorstore = Pinecone(index, embed.embed_query, text_field, namespace=query_namespace)
+    vectorstore = Pinecone(
+                namespace=query_namespace,
+                index=index, 
+                embedding=embed,
+                text_key=text_field,
+)
     
     return vectorstore
 
@@ -151,7 +156,6 @@ def get_conversation_chain(vectorstore):
         chain_type="stuff",
         retriever=vectorstore.as_retriever(),
         return_source_documents=True,
-    
     )
     return qa
 
