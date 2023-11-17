@@ -14,6 +14,7 @@ import hashlib
 from streamlit_chat import message
 
 from langchain.chat_models import ChatOpenAI
+from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.chains.conversation.memory import ConversationBufferWindowMemory
 
@@ -138,30 +139,78 @@ def pinecone_index(pinecone_namespace, data, index_name):
 def get_vectorstore(query_namespace, index):
     embed = OpenAIEmbeddings(model='text-embedding-ada-002')
     text_field = "text"
-    vectorstore = Pinecone(index, embed.embed_query, text_field, namespace=query_namespace)
+    vectorstore = Pinecone(
+        namespace=query_namespace,
+        index=index, 
+        embedding=embed,
+        text_key=text_field,
+)
     
     return vectorstore
 
 def get_conversation_chain(vectorstore):
     llm_1 = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
 
-    # Retrieval qa chain
+    # Retrieval qa chain New Template
+    template ="""
+    From document snippets and a query, yield a sourced answer. If unsure, state it; always cite 'SOURCES'.
+    QUESTION: What law governs the interpretation of this contract?
+    =========
+    Content: This Agreement is governed by English law and the parties submit to the exclusive jurisdiction of the English courts in relation to any dispute (contractual or non-contractual) concerning this Agreement. Either party may apply to any court for an injunction or other relief to protect its Intellectual Property Rights.
+    Source: 28-pl
+    Content: No Waiver. Any delay in exercising any right under this Agreement is not a waiver. Severability clause present. No Agency or Third-Party Beneficiaries clauses included.
+    Source: 30-pl
+    Content: Google may believe, in good faith, the Distributor violated or could likely violate Anti-Bribery Laws as defined in Clause 8.5.
+    Source: 4-pl
+    =========
+    FINAL ANSWER: This Agreement is governed by English law.
+    SOURCES: 28-pl
+
+    QUESTION: What did the president say about Michael Jackson?
+    =========
+    Content: Madam Speaker, Madam Vice President, First Lady, Second Gentleman, Congress, Cabinet, Justices, fellow Americans. Last year COVID-19 separated us, this year we're united. Meeting as Democrats, Republicans, Independents, but chiefly as Americans. Duty to each other, the public, and the Constitution. Freedom will triumph over tyranny. Six days ago, Putin miscalculated Ukraine's resolve.
+    Source: 0-pl
+    Content: Losses to COVID-19, both time and lives. Moment for a reset; not a partisan issue. NYPD visit after Officer Mora and Rivera's funerals.
+    Source: 24-pl
+    Content: Russian invasion has global implications. Sanctions targeted at Russia's economy. Released 60M barrels of oil in coordination with allies.
+    Source: 5-pl
+    Content: Advocacy for patient support. Calls for ARPA-H funding for health breakthroughs. Unity agenda; we're gathered in the citadel of our democracy.
+    Source: 34-pl
+    =========
+    FINAL ANSWER: The president did not mention Michael Jackson.
+    SOURCES:
+
+    QUESTION: {question}
+    =========
+    {summaries}
+    =========
+    FINAL ANSWER:
+    """
+
     qa = RetrievalQAWithSourcesChain.from_chain_type(
-        llm=llm_1,
-        chain_type="stuff",
-        retriever=vectorstore.as_retriever(),
-        return_source_documents=True,
+            llm=llm_1,
+            chain_type="stuff",
+            retriever=vectorstore.as_retriever(),
+            return_source_documents=True,
+            chain_type_kwargs={
+                "prompt": PromptTemplate(
+                template=template,
+                input_variables=["summaries", "question"],
+            ),
+        },
     )
+
     return qa
 
 def handle_chat(qa, query):
-    result = qa({"question":query})
-    response = f"{result['answer']}\n Sources:\n {result['sources']}"
-    st.session_state["qa"] = qa
-    st.session_state.requests.append(query)
-    st.session_state.responses.append(response)
+    result = qa({"question": query})
+    response = f"{result['answer']}  \nSources: {result['sources']}"
     
+    # Store the qa function for future use (if needed)
+    st.session_state["qa"] = qa
 
+    return response  # Return the assistant's response for further use
+    
 def main():
     global index, index_name
 
@@ -172,12 +221,12 @@ def main():
     with st.sidebar:
         st.subheader("⬆️ Sube tus documentos 📄")
         pdf_docs = st.file_uploader(
-            "📄 Arrastra aquí PDFs y haz clic 👆 en 'Procesar':", accept_multiple_files=True)
-        upload_namespace = st.text_input("📝 Escribe un nombre para tu base de datos 🗄️:")
+            "📄 Arrastre aquí sus PDFs y haga clic 👆 en 'Procesar':", accept_multiple_files=True)
+        upload_namespace = st.text_input("📝 Escriba el nombre de su base de datos 🗄️:")
 
         if st.button("Procesar ⚙️"):
             if not upload_namespace:
-                st.warning("🎗️ No olvides  el nombre de tu base de datos 🗄️")
+                st.warning("🎗️ No olvide poner un nombre de su base de datos 🗄️")
             else:
                 with st.spinner("Procesando... ⏳"):
                     # get pdf text
@@ -187,7 +236,7 @@ def main():
                     # create vector store
                     pinecone_index(upload_namespace, docs_pages, index_name)
         # Always show the header
-        st.subheader("👆 Haz clic  en la base de datos 🗄️ que quieras consultar 🔍")
+        st.subheader("👆 Haga clic  en la base de datos 🗄️ que quiera consultar 🔍")
 
         pinecone.init(api_key=os.environ['PINECONE_API_KEY'], 
                 environment=os.environ['PINECONE_API_ENV'])
@@ -225,39 +274,36 @@ def main():
         if 'namespace' in st.session_state and st.session_state['namespace']:
             st.success(f"Base de datos 🗄️ seleccionada ✅: {st.session_state['namespace']}")
         else:
-            st.warning("No olvides 🎗️ seleccionar 👆 la base de datos 🗄️ que quieres consultar.")
+            st.warning("🎗️ No olvide seleccionar la base de datos 👆 a consultar 🗄️.")
             st.stop()  # Stop execution of the script
 
-    if 'responses' not in st.session_state:
-        st.session_state['responses'] = []
-    if 'requests' not in st.session_state:
-        st.session_state['requests'] = []
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-    # container for text box
-    response_container = st.container()
-    textcontainer = st.container()
+    # Display chat messages using `st.chat_message`
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
 
-    with response_container:
-        if st.session_state['responses']:        
-            for i in range(len(st.session_state['requests'])):
-                message(st.session_state["requests"][i], is_user=True, key=str(i) + '_user')
-                if i < len(st.session_state['responses']):
-                    message(st.session_state['responses'][i], key=str(i))
+    # React to user input
+    if prompt := st.chat_input("Cual es su consulta?"):
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
         
-    with textcontainer:
-    
-        query = st.text_area("Consulta 🔍: ", key="input")
-        send_button = st.button("Enviar 📤")
+        # Display user message in chat message container
+        with st.chat_message("user"):
+            st.markdown(prompt)
+            
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            full_response = handle_chat(qa_chain, prompt)  # Assuming handle_chat returns the full assistant's response
+            
+            message_placeholder.markdown(full_response)
 
-        if send_button and query:
-            with st.spinner("Buscando... 🔎"):
-                handle_chat(qa_chain, query)
-
-            # Add a small delay
-            sleep(0.1)
-
-            # Rerun the script
-            st.experimental_rerun()
+        # Add assistant response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 if __name__ == '__main__':
     main() 
